@@ -128,6 +128,9 @@ class FlutterSlider extends StatefulWidget {
   /// This factor is timesed by the height of the height of the slider. It must be greater than 0.
   final double containerHeightFactor;
 
+  /// This is used when you want to change slider value when focus on labels.By default it's false.
+  final bool enableSliderOnLabels;
+
   FlutterSlider({
     Key? key,
     this.min,
@@ -163,6 +166,7 @@ class FlutterSlider extends StatefulWidget {
     this.decoration,
     this.foregroundDecoration,
     this.containerHeightFactor = 2,
+    this.enableSliderOnLabels = false,
   })  : assert(containerHeightFactor > 0, "containerHeightFactor should be greater than 0"),
         assert(touchSize == null || (touchSize >= 5 && touchSize <= 50)),
         assert((ignoreSteps.isNotEmpty && step.rangeList == null) || (ignoreSteps.isEmpty)),
@@ -171,11 +175,7 @@ class FlutterSlider extends StatefulWidget {
             (maximumDistance > 0 && step.rangeList == null) ||
             (step.rangeList == null)),
         assert(centeredOrigin == false ||
-            (centeredOrigin == true &&
-                rangeSlider == false &&
-                lockHandlers == false &&
-                minimumDistance == 0 &&
-                maximumDistance == 0)),
+            (centeredOrigin == true && rangeSlider == false && lockHandlers == false && minimumDistance == 0 && maximumDistance == 0)),
         assert(lockHandlers == false ||
             (centeredOrigin == false &&
                 (ignoreSteps.isEmpty) &&
@@ -186,8 +186,7 @@ class FlutterSlider extends StatefulWidget {
                 lockDistance != null &&
                 step.rangeList == null &&
                 lockDistance >= step.step /* && values[1] - values[0] == lockDistance*/)),
-        assert(fixedValues != null || (min != null && max != null && min <= max),
-            "Min and Max are required if fixedValues is null"),
+        assert(fixedValues != null || (min != null && max != null && min <= max), "Min and Max are required if fixedValues is null"),
         assert(rangeSlider == false || (rangeSlider == true && values.length > 1), "Range slider needs two values"),
 //        assert( fixedValues == null || (fixedValues != null && values[0] >= 0 && values[0] <= 100), "When using fixedValues, you should set values within the range of fixedValues" ),
 //        assert( fixedValues == null || (fixedValues != null && values.length > 1 && values[1] >= values[0] && values[1] <= 100), "When using fixedValues, you should set values within the range of fixedValues" ),
@@ -349,6 +348,7 @@ class FlutterSliderState extends State<FlutterSlider> with TickerProviderStateMi
 
   // Distance from the right and left handlers
   double? _distanceFromRightHandler, _distanceFromLeftHandler;
+
   // The distance between the two handlers
   double _handlersDistance = 0;
 
@@ -577,8 +577,8 @@ class FlutterSliderState extends State<FlutterSlider> with TickerProviderStateMi
     _points = [];
 
     // Calculates the maximum track bar height from the inactive and active track bar heights.
-    double maxTrackBarHeight = (<double>[widget.trackBar.inactiveTrackBarHeight, widget.trackBar.activeTrackBarHeight])
-        .reduce((a, b) => a > b ? a : b);
+    double maxTrackBarHeight =
+        (<double>[widget.trackBar.inactiveTrackBarHeight, widget.trackBar.activeTrackBarHeight]).reduce((a, b) => a > b ? a : b);
 
     FlutterSliderHatchMark hatchMark = FlutterSliderHatchMark();
     hatchMark.disabled = widget.hatchMark!.disabled;
@@ -586,10 +586,10 @@ class FlutterSliderState extends State<FlutterSlider> with TickerProviderStateMi
     hatchMark.smallDensity = widget.hatchMark!.smallDensity;
     hatchMark.linesDistanceFromTrackBar = widget.hatchMark!.linesDistanceFromTrackBar ?? 0;
     hatchMark.labelsDistanceFromTrackBar = widget.hatchMark!.labelsDistanceFromTrackBar ?? 0;
-    hatchMark.smallLine = widget.hatchMark!.smallLine ??
-        const FlutterSliderSizedBox(height: 5, width: 1, decoration: BoxDecoration(color: Colors.black45));
-    hatchMark.bigLine = widget.hatchMark!.bigLine ??
-        const FlutterSliderSizedBox(height: 9, width: 2, decoration: BoxDecoration(color: Colors.black45));
+    hatchMark.smallLine =
+        widget.hatchMark!.smallLine ?? const FlutterSliderSizedBox(height: 5, width: 1, decoration: BoxDecoration(color: Colors.black45));
+    hatchMark.bigLine =
+        widget.hatchMark!.bigLine ?? const FlutterSliderSizedBox(height: 9, width: 2, decoration: BoxDecoration(color: Colors.black45));
     hatchMark.labelBox = widget.hatchMark!.labelBox ?? const FlutterSliderSizedBox(height: 50, width: 50);
     hatchMark.labels = widget.hatchMark!.labels;
     hatchMark.linesAlignment = widget.hatchMark!.linesAlignment;
@@ -846,8 +846,7 @@ class FlutterSliderState extends State<FlutterSlider> with TickerProviderStateMi
     _tooltipData = FlutterSliderTooltip();
     _tooltipData.boxStyle = widgetTooltip.boxStyle ??
         FlutterSliderTooltipBox(
-            decoration:
-                BoxDecoration(border: Border.all(color: Colors.black12, width: 0.5), color: const Color(0xffffffff)));
+            decoration: BoxDecoration(border: Border.all(color: Colors.black12, width: 0.5), color: const Color(0xffffffff)));
     _tooltipData.textStyle = widgetTooltip.textStyle ?? const TextStyle(fontSize: 12, color: Colors.black38);
     _tooltipData.leftPrefix = widgetTooltip.leftPrefix;
     _tooltipData.leftSuffix = widgetTooltip.leftSuffix;
@@ -937,8 +936,7 @@ class FlutterSliderState extends State<FlutterSlider> with TickerProviderStateMi
   void _generateHandler() {
     /*Right Handler Data*/
     FlutterSliderHandler inputRightHandler = widget.rightHandler ?? FlutterSliderHandler();
-    inputRightHandler.child ??=
-        Icon((widget.axis == Axis.horizontal) ? Icons.chevron_left : Icons.expand_less, color: Colors.black45);
+    inputRightHandler.child ??= Icon((widget.axis == Axis.horizontal) ? Icons.chevron_left : Icons.expand_less, color: Colors.black45);
     inputRightHandler.decoration ??= const BoxDecoration(
         boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 2, spreadRadius: 0.2, offset: Offset(0, 1))],
         color: Colors.white,
@@ -982,8 +980,7 @@ class FlutterSliderState extends State<FlutterSlider> with TickerProviderStateMi
 
   double getValueByPosition(double position) {
     double value = ((position / (__containerSizeWithoutPadding! / _divisions)) * _widgetStep!);
-    value = (double.parse(value.toStringAsFixed(_decimalScale)) -
-        double.parse((value % _widgetStep!).toStringAsFixed(_decimalScale)));
+    value = (double.parse(value.toStringAsFixed(_decimalScale)) - double.parse((value % _widgetStep!).toStringAsFixed(_decimalScale)));
     return value;
   }
 
@@ -1152,8 +1149,7 @@ class FlutterSliderState extends State<FlutterSlider> with TickerProviderStateMi
                     getValueByPositionIgnoreOffset(__axisPosTmp!) <= steps.to! + _widgetStep! / 2)) ||
             ((widget.rtl) &&
                 (_realMax! - getValueByPositionIgnoreOffset(__axisPosTmp!) > steps.from! - _widgetStep! / 2 &&
-                    _realMax! - getValueByPositionIgnoreOffset(__axisPosTmp!) <= steps.to! + _widgetStep! / 2)))
-          validMove = false;
+                    _realMax! - getValueByPositionIgnoreOffset(__axisPosTmp!) <= steps.to! + _widgetStep! / 2))) validMove = false;
       }
     }
 
@@ -1393,8 +1389,7 @@ class FlutterSliderState extends State<FlutterSlider> with TickerProviderStateMi
                     getValueByPositionIgnoreOffset(__axisPosTmp!) <= steps.to! + _widgetStep! / 2)) ||
             ((widget.rtl) &&
                 (_realMax! - getValueByPositionIgnoreOffset(__axisPosTmp!) > steps.from! - _widgetStep! / 2 &&
-                    _realMax! - getValueByPositionIgnoreOffset(__axisPosTmp!) <= steps.to! + _widgetStep! / 2)))
-          validMove = false;
+                    _realMax! - getValueByPositionIgnoreOffset(__axisPosTmp!) <= steps.to! + _widgetStep! / 2))) validMove = false;
       }
     }
     return validMove;
@@ -1519,8 +1514,7 @@ class FlutterSliderState extends State<FlutterSlider> with TickerProviderStateMi
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              _tooltip(
-                  side: 'left', value: _outputLowerValue, opacity: _leftTooltipOpacity, animation: _leftTooltipAnimation),
+              _tooltip(side: 'left', value: _outputLowerValue, opacity: _leftTooltipOpacity, animation: _leftTooltipAnimation),
               leftHandler,
             ],
           ),
@@ -1625,8 +1619,7 @@ class FlutterSliderState extends State<FlutterSlider> with TickerProviderStateMi
           child: Stack(
             clipBehavior: Clip.none,
             children: ([
-              _tooltip(
-                  side: 'right', value: _outputUpperValue, opacity: _rightTooltipOpacity, animation: _rightTooltipAnimation),
+              _tooltip(side: 'right', value: _outputUpperValue, opacity: _rightTooltipOpacity, animation: _rightTooltipAnimation),
               rightHandler,
             ]),
           ),
@@ -1727,74 +1720,78 @@ class FlutterSliderState extends State<FlutterSlider> with TickerProviderStateMi
   }
 
   drawHandlers() {
-    List<Positioned> items = [
-      Function.apply(_inactiveTrack, []),
-      Function.apply(_centralWidget, []),
-      Function.apply(_activeTrack, [])
-    ];
+    List<Positioned> items = [Function.apply(_inactiveTrack, []), Function.apply(_centralWidget, []), Function.apply(_activeTrack, [])];
     items.addAll(_points);
 
     double tappedPositionWithPadding = 0;
 
-    items.add(
-      Positioned(
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        child: Opacity(
-          opacity: 0,
-          child: Listener(
-            onPointerUp: (_) {
-              __dragging = false;
-              if (widget.selectByTap && !__dragging) {
-                tappedPositionWithPadding = _distance();
-                if (_distanceFromLeftHandler! < _distanceFromRightHandler!) {
-                  if (!widget.rangeSlider) {
-                    _rightHandlerMove(_, tappedPositionWithPadding: tappedPositionWithPadding, selectedByTap: true);
+    if (widget.enableSliderOnLabels) {
+      items.add(
+        Positioned(
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+          child: Opacity(
+            opacity: 0,
+            child: Listener(
+              onPointerUp: (_) {
+                __dragging = false;
+                if (widget.selectByTap && !__dragging) {
+                  tappedPositionWithPadding = _distance();
+                  if (_distanceFromLeftHandler! < _distanceFromRightHandler!) {
+                    if (!widget.rangeSlider) {
+                      _rightHandlerMove(_, tappedPositionWithPadding: tappedPositionWithPadding, selectedByTap: true);
+                    } else {
+                      _leftHandlerMove(_, tappedPositionWithPadding: tappedPositionWithPadding, selectedByTap: true);
+                    }
                   } else {
-                    _leftHandlerMove(_, tappedPositionWithPadding: tappedPositionWithPadding, selectedByTap: true);
+                    _rightHandlerMove(_, tappedPositionWithPadding: tappedPositionWithPadding, selectedByTap: true);
                   }
                 } else {
-                  _rightHandlerMove(_, tappedPositionWithPadding: tappedPositionWithPadding, selectedByTap: true);
-                }
-              } else {
-                if (_slidingByActiveTrackBar) {
-                  _callbacks('onDragCompleted', 0);
-                }
-                if (_leftTapAndSlide) {
-                  _callbacks('onDragCompleted', 0);
-                }
-                if (_rightTapAndSlide) {
-                  _callbacks('onDragCompleted', 1);
-                }
-              }
-
-              _hideTooltips();
-
-              _stopHandlerAnimation(animation: _leftHandlerScaleAnimation, controller: _leftHandlerScaleAnimationController);
-              _stopHandlerAnimation(
-                  animation: _rightHandlerScaleAnimation, controller: _rightHandlerScaleAnimationController);
-
-              setState(() {});
-            },
-            onPointerMove: (_) {
-              __dragging = true;
-
-              if (_slidingByActiveTrackBar) {
-                _trackBarSlideCallDragStated(0);
-                _leftHandlerMove(_, lockedHandlersDragOffset: __lockedHandlersDragOffset);
-              } else {
-                tappedPositionWithPadding = _distance();
-
-                if (widget.rangeSlider) {
+                  if (_slidingByActiveTrackBar) {
+                    _callbacks('onDragCompleted', 0);
+                  }
                   if (_leftTapAndSlide) {
-                    _trackBarSlideCallDragStated(0);
-                    if (!_tooltipData.disabled! && _tooltipData.alwaysShowTooltip == false) {
-                      _leftTooltipOpacity = 1;
-                      _leftTooltipAnimationController.forward();
+                    _callbacks('onDragCompleted', 0);
+                  }
+                  if (_rightTapAndSlide) {
+                    _callbacks('onDragCompleted', 1);
+                  }
+                }
+
+                _hideTooltips();
+
+                _stopHandlerAnimation(animation: _leftHandlerScaleAnimation, controller: _leftHandlerScaleAnimationController);
+                _stopHandlerAnimation(animation: _rightHandlerScaleAnimation, controller: _rightHandlerScaleAnimationController);
+
+                setState(() {});
+              },
+              onPointerMove: (_) {
+                __dragging = true;
+
+                if (_slidingByActiveTrackBar) {
+                  _trackBarSlideCallDragStated(0);
+                  _leftHandlerMove(_, lockedHandlersDragOffset: __lockedHandlersDragOffset);
+                } else {
+                  tappedPositionWithPadding = _distance();
+
+                  if (widget.rangeSlider) {
+                    if (_leftTapAndSlide) {
+                      _trackBarSlideCallDragStated(0);
+                      if (!_tooltipData.disabled! && _tooltipData.alwaysShowTooltip == false) {
+                        _leftTooltipOpacity = 1;
+                        _leftTooltipAnimationController.forward();
+                      }
+                      _leftHandlerMove(_, tappedPositionWithPadding: tappedPositionWithPadding);
+                    } else {
+                      _trackBarSlideCallDragStated(1);
+                      if (!_tooltipData.disabled! && _tooltipData.alwaysShowTooltip == false) {
+                        _rightTooltipOpacity = 1;
+                        _rightTooltipAnimationController.forward();
+                      }
+                      _rightHandlerMove(_, tappedPositionWithPadding: tappedPositionWithPadding);
                     }
-                    _leftHandlerMove(_, tappedPositionWithPadding: tappedPositionWithPadding);
                   } else {
                     _trackBarSlideCallDragStated(1);
                     if (!_tooltipData.disabled! && _tooltipData.alwaysShowTooltip == false) {
@@ -1803,103 +1800,96 @@ class FlutterSliderState extends State<FlutterSlider> with TickerProviderStateMi
                     }
                     _rightHandlerMove(_, tappedPositionWithPadding: tappedPositionWithPadding);
                   }
+                }
+              },
+              onPointerDown: (_) {
+                _leftTapAndSlide = false;
+                _rightTapAndSlide = false;
+                _slidingByActiveTrackBar = false;
+                __dragging = false;
+                _trackBarSlideOnDragStartedCalled = false;
+
+                double leftHandlerLastPosition, rightHandlerLastPosition;
+                if (widget.axis == Axis.horizontal) {
+                  double lX = _leftHandlerXPosition! + _handlersPadding + _touchSize! + _containerLeft;
+                  double rX = _rightHandlerXPosition! + _handlersPadding + _touchSize! + _containerLeft;
+
+                  _distanceFromRightHandler = (rX - _.position.dx);
+                  _distanceFromLeftHandler = (lX - _.position.dx);
+
+                  leftHandlerLastPosition = lX;
+                  rightHandlerLastPosition = rX;
                 } else {
-                  _trackBarSlideCallDragStated(1);
-                  if (!_tooltipData.disabled! && _tooltipData.alwaysShowTooltip == false) {
+                  double lY = _leftHandlerYPosition! + _handlersPadding + _touchSize! + _containerTop;
+                  double rY = _rightHandlerYPosition! + _handlersPadding + _touchSize! + _containerTop;
+
+                  _distanceFromLeftHandler = (lY - _.position.dy);
+                  _distanceFromRightHandler = (rY - _.position.dy);
+
+                  leftHandlerLastPosition = lY;
+                  rightHandlerLastPosition = rY;
+                }
+
+                if (widget.rangeSlider &&
+                    widget.trackBar.activeTrackBarDraggable &&
+                    _ignoreSteps.isEmpty &&
+                    _distanceFromRightHandler! > 0 &&
+                    _distanceFromLeftHandler! < 0) {
+                  _slidingByActiveTrackBar = true;
+                } else {
+                  double thumbPosition = (widget.axis == Axis.vertical) ? _.position.dy : _.position.dx;
+                  if (_distanceFromLeftHandler!.abs() < _distanceFromRightHandler!.abs() ||
+                      (_distanceFromLeftHandler == _distanceFromRightHandler && thumbPosition < leftHandlerLastPosition)) {
+                    _leftTapAndSlide = true;
+                  }
+                  if (_distanceFromRightHandler!.abs() < _distanceFromLeftHandler!.abs() ||
+                      (_distanceFromLeftHandler == _distanceFromRightHandler && thumbPosition < rightHandlerLastPosition)) {
+                    _rightTapAndSlide = true;
+                  }
+                }
+
+                // if drag is within active area
+                if (_distanceFromRightHandler! > 0 && _distanceFromLeftHandler! < 0) {
+                  if (widget.axis == Axis.horizontal) {
+                    xDragTmp = 0;
+                    __lockedHandlersDragOffset = (_leftHandlerXPosition! + _containerLeft - _.position.dx).abs();
+                  } else {
+                    yDragTmp = 0;
+                    __lockedHandlersDragOffset = (_leftHandlerYPosition! + _containerTop - _.position.dy).abs();
+                  }
+                }
+//              }
+
+                if (_ignoreSteps.isEmpty) {
+                  if ((widget.lockHandlers || __lockedHandlersDragOffset > 0) &&
+                      !_tooltipData.disabled! &&
+                      _tooltipData.alwaysShowTooltip == false) {
+                    _leftTooltipOpacity = 1;
+                    _leftTooltipAnimationController.forward();
                     _rightTooltipOpacity = 1;
                     _rightTooltipAnimationController.forward();
                   }
-                  _rightHandlerMove(_, tappedPositionWithPadding: tappedPositionWithPadding);
-                }
-              }
-            },
-            onPointerDown: (_) {
-              _leftTapAndSlide = false;
-              _rightTapAndSlide = false;
-              _slidingByActiveTrackBar = false;
-              __dragging = false;
-              _trackBarSlideOnDragStartedCalled = false;
 
-              double leftHandlerLastPosition, rightHandlerLastPosition;
-              if (widget.axis == Axis.horizontal) {
-                double lX = _leftHandlerXPosition! + _handlersPadding + _touchSize! + _containerLeft;
-                double rX = _rightHandlerXPosition! + _handlersPadding + _touchSize! + _containerLeft;
-
-                _distanceFromRightHandler = (rX - _.position.dx);
-                _distanceFromLeftHandler = (lX - _.position.dx);
-
-                leftHandlerLastPosition = lX;
-                rightHandlerLastPosition = rX;
-              } else {
-                double lY = _leftHandlerYPosition! + _handlersPadding + _touchSize! + _containerTop;
-                double rY = _rightHandlerYPosition! + _handlersPadding + _touchSize! + _containerTop;
-
-                _distanceFromLeftHandler = (lY - _.position.dy);
-                _distanceFromRightHandler = (rY - _.position.dy);
-
-                leftHandlerLastPosition = lY;
-                rightHandlerLastPosition = rY;
-              }
-
-              if (widget.rangeSlider &&
-                  widget.trackBar.activeTrackBarDraggable &&
-                  _ignoreSteps.isEmpty &&
-                  _distanceFromRightHandler! > 0 &&
-                  _distanceFromLeftHandler! < 0) {
-                _slidingByActiveTrackBar = true;
-              } else {
-                double thumbPosition = (widget.axis == Axis.vertical) ? _.position.dy : _.position.dx;
-                if (_distanceFromLeftHandler!.abs() < _distanceFromRightHandler!.abs() ||
-                    (_distanceFromLeftHandler == _distanceFromRightHandler && thumbPosition < leftHandlerLastPosition)) {
-                  _leftTapAndSlide = true;
-                }
-                if (_distanceFromRightHandler!.abs() < _distanceFromLeftHandler!.abs() ||
-                    (_distanceFromLeftHandler == _distanceFromRightHandler && thumbPosition < rightHandlerLastPosition)) {
-                  _rightTapAndSlide = true;
-                }
-              }
-
-              // if drag is within active area
-              if (_distanceFromRightHandler! > 0 && _distanceFromLeftHandler! < 0) {
-                if (widget.axis == Axis.horizontal) {
-                  xDragTmp = 0;
-                  __lockedHandlersDragOffset = (_leftHandlerXPosition! + _containerLeft - _.position.dx).abs();
-                } else {
-                  yDragTmp = 0;
-                  __lockedHandlersDragOffset = (_leftHandlerYPosition! + _containerTop - _.position.dy).abs();
-                }
-              }
-//              }
-
-              if (_ignoreSteps.isEmpty) {
-                if ((widget.lockHandlers || __lockedHandlersDragOffset > 0) &&
-                    !_tooltipData.disabled! &&
-                    _tooltipData.alwaysShowTooltip == false) {
-                  _leftTooltipOpacity = 1;
-                  _leftTooltipAnimationController.forward();
-                  _rightTooltipOpacity = 1;
-                  _rightTooltipAnimationController.forward();
+                  if ((widget.lockHandlers || __lockedHandlersDragOffset > 0)) {
+                    _leftHandlerScaleAnimationController!.forward();
+                    _rightHandlerScaleAnimationController!.forward();
+                  }
                 }
 
-                if ((widget.lockHandlers || __lockedHandlersDragOffset > 0)) {
-                  _leftHandlerScaleAnimationController!.forward();
-                  _rightHandlerScaleAnimationController!.forward();
-                }
-              }
-
-              setState(() {});
-            },
-            child: Draggable(
-              axis: widget.axis,
-              feedback: Container(),
-              child: Container(
-                color: Colors.transparent,
+                setState(() {});
+              },
+              child: Draggable(
+                axis: widget.axis,
+                feedback: Container(),
+                child: Container(
+                  color: Colors.transparent,
+                ),
               ),
             ),
           ),
         ),
-      ),
-    );
+      );
+    }
 
 //    items      ..addAll(_points);
 
